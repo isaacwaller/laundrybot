@@ -1,8 +1,35 @@
+* { padding: 0; margin: 0; }
+
+html {
+  height: 100%;
+}
+
 body {
-  padding: 50px;
+  height: 100%;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 
 a {
   color: #00B7FF;
+}
+
+.fragment {
+  width: 49%;
+  height: 100%;
+  float: left;
+  text-align: center;
+}
+
+#fragment-washer {
+  border-right: 1px solid black;
+}
+
+.fragment h1 {
+  display: block;
+  padding: 25px;
+}
+
+.fragment-cancel {
+  background-color: black;
+  color: white;
 }

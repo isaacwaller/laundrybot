@@ -11,10 +11,6 @@ var hangups = require('hangupsjs');
 
 var app = express();
 
-// view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
-
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
@@ -81,7 +77,7 @@ client.connect(creds).then(function() {
     console.log("connected to hangouts");
     bld = new hangups.MessageBuilder()
     segments = bld.text('Hello ').bold('World').text('!!!').toSegments()
-    client.sendchatmessage(people[0].conversation, segments);
+    // client.sendchatmessage(people[0].conversation, segments);
 }).done();
 
 module.exports = app;
