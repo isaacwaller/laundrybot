@@ -14,22 +14,104 @@ a {
 }
 
 .fragment {
-  width: 49%;
+  width: 50%;
   height: 100%;
   float: left;
   text-align: center;
 }
 
 #fragment-washer {
+  box-sizing:border-box;
   border-right: 1px solid black;
+}
+
+.fragment-inner {
+  height: 100%;
+  display: flex;
+  flex-direction:column;
 }
 
 .fragment h1 {
   display: block;
   padding: 25px;
+  font-size: 30px;
+}
+
+.fragment-body {
+  flex-grow: 1;
+  display: flex;
 }
 
 .fragment-cancel {
   background-color: black;
   color: white;
+  height: 100px;
+  line-height: 100px;
+}
+
+.button {
+  background-color: black;
+  color: white;
+  padding: 25px;
+  width: 60%;
+  margin: 0 auto;
+  font-size: 20px;
+}
+
+.green-button {
+  background-color: green;
+}
+
+.red-button {
+  background-color: red;
+}
+
+.fragment-cancel-dialog {
+  position: absolute;
+  top: 0;
+  width: 50%;
+  height: 100%;
+  display: flex;
+  justify-content:center;
+  align-content:center;
+  flex-direction:column;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.fragment-cancel-inner {
+  background-color: black;
+  color: white;
+  padding: 20px;
+  width: 80%;
+  margin: 0 auto;
+}
+
+.fragment-cancel-inner div.message {
+  padding: 20px;
+}
+
+.content {
+  flex: 1;
+}
+
+#content-idle {
+  display: flex;
+  justify-content:center;
+  align-content:center;
+  flex-direction:column;
+}
+
+#content-idle h2 {
+  padding: 50px;
+  font-size: 30px;
+}
+
+#content-choosing-person div,
+#content-choosing-ok-for-dryer div {
+  font-size: 20px;
+  padding: 20px;
+}
+
+.not-in-use {
+  color: green;
 }
