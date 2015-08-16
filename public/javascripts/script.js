@@ -34,13 +34,52 @@ var LaundryDisplay = React.createClass({
           <div className="button" onClick={function() { component.chooseOkForDryer(false) }}>NO</div>
         </div>
       );
+    } else if (state == "in_use") {
+      var secondsElapsed = (Date.now() - this.state.startTime) / 1000;
+      var secondsRemaining = Math.floor(this.state.cycleTime - secondsElapsed);
+
+      var minutesRemaining = Math.max(Math.floor(secondsRemaining / 60), 0);
+      var secondsMinusMinutes = secondsRemaining - (minutesRemaining * 60);
+      if (secondsMinusMinutes < 0) {
+        secondsMinusMinutes = "00";
+      } else if (secondsMinusMinutes < 10) {
+        secondsMinusMinutes = "0" + secondsMinusMinutes;
+      }
+      return (
+        <div className="content" id="content-in-use">
+          <h2 className="in-use">IN USE</h2>
+          <div className="in-use-timer">{minutesRemaining}:{secondsMinusMinutes}</div>
+          <div className="in-use-user">{this.state.owner.name}</div>
+        </div>
+      );
+    } else if (state == "finished") {
+      var machine = this.props.type.toUpperCase();
+      var owner = this.state.owner.name;
+      var notice;
+      if (this.props.type == "dryer") {
+        notice = owner + " still needs to take their clothes out of the dryer before someone else can use it.";
+      } else if (this.state.okForDryer) {
+        notice = owner + " said it was OK if someone else moved their clothes to the dryer."
+      } else {
+        notice = "If you are not " + owner + " , it is NOT OK to put these clothes ";
+        notice += "in the dryer. Please wait for them."
+      }
+      return (
+        <div className="content" id="content-finished">
+          <h2 className="finished">DONE<br />BUT CLOTHES STILL IN {machine}</h2>
+          <div className="finished-user">{owner}</div>
+          <div className="finished-notice">{notice}</div>
+          <div className="button finished-button" onClick={this.remindComplete}>REMIND {owner.toUpperCase()}</div>
+          <div className="button finished-button green-button" onClick={this.finishComplete}>IT&#39;S DONE</div>
+        </div>
+      );
     } else {
       return "Unknown state " + state + " with " + JSON.stringify(this.state) + ", please complain to Isaac";
     }
   },
 
   shouldDisplayCancel: function() {
-    return this.currentState() != "idle";
+    return this.currentState() != "idle" && this.currentState() != "finished";
   },
 
   makeServerRequest: function(endpoint, params) {
@@ -56,7 +95,12 @@ var LaundryDisplay = React.createClass({
   },
 
   cancel: function() {
-    this.setState({ showCancel: true });
+    if (this.currentState() == "in_use") {
+      this.setState({ showCancel: true });
+    } else {
+      // Just cancel immediately
+      this.confirmCancel();
+    }
   },
 
   hideCancel: function() {
@@ -73,6 +117,14 @@ var LaundryDisplay = React.createClass({
 
   chooseOkForDryer: function(ok_for_dryer) {
     this.makeServerRequest("choose_ok_for_dryer", { ok_for_dryer: ok_for_dryer });
+  },
+
+  remindComplete: function(ok_for_dryer) {
+    this.makeServerRequest("remind_complete");
+  },
+
+  finishComplete: function(ok_for_dryer) {
+    this.makeServerRequest("finish_complete");
   },
 
   render: function() {
@@ -114,6 +166,9 @@ var dryerDisplay = React.render(
   document.getElementById('fragment-dryer')
 );
 
+var washerHasTimer = false;
+var dryerHasTimer = false;
+
 function loadFailure() {
   location.reload();
 }
@@ -127,6 +182,20 @@ function updateState() {
 function updateStateFromResponse(response) {
   washerDisplay.replaceState(response['washer']);
   dryerDisplay.replaceState(response['dryer']);
+
+  washerHasTimer = response['washer']['state'] == 'in_use';
+  dryerHasTimer = response['dryer']['state'] == 'in_use';
+
+  [response['washer'], response['dryer']].some(function (obj) {
+    if (obj.state == 'in_use') {
+      var targetTime = obj.startTime + (obj.cycleTime * 1000);
+      var difference = targetTime - Date.now();
+      difference += 100; // Just to account for server / client timing differences
+      setTimeout(updateState, difference);
+      console.log("Updating state in " + difference + "ms");
+    }
+    return false;
+  });
 }
 
 function makeServerRequest(endpoint, params) {
@@ -136,3 +205,16 @@ function makeServerRequest(endpoint, params) {
 }
 
 updateState();
+
+// Timer
+
+function updateTimers() {
+  if (washerHasTimer) {
+    washerDisplay.forceUpdate();
+  }
+  if (dryerHasTimer) {
+    dryerDisplay.forceUpdate();
+  }
+}
+setInterval(updateTimers, 100);
+setInterval(updateState, 30000); // Update state every 30 seconds, just in case of desync

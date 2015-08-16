@@ -115,3 +115,45 @@ a {
 .not-in-use {
   color: green;
 }
+
+#content-in-use div {
+  padding: 30px;
+  font-size: 30px;
+}
+
+.in-use {
+  color: red;
+}
+
+#content-in-use div.in-use-timer {
+  font-size: 90px;
+  padding: 0;
+}
+
+#content-finished {
+  display: flex;
+  flex-direction:column;
+}
+
+#content-finished .finished {
+  color: red;
+  font-size: 30px;
+  padding: 30px;
+}
+
+.finished-user {
+  padding-bottom: 30px;
+  font-size: 30px;
+}
+
+.finished-notice {
+  flex: 1;
+  font-size: 25px;
+  padding: 10px;
+}
+
+.button.finished-button {
+  width: 100%;
+  padding-left: 0;
+  padding-right: 0;
+}

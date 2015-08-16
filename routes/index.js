@@ -12,6 +12,11 @@ function createStateResponse() {
   return response;
 }
 
+router.use(function (req, res, next) {
+  laundryManager.tick(); // Make sure state is up to date. We do this before every request
+  next();
+});
+
 // Home page
 router.get('/', function(req, res, next) {
   res.render('index');
@@ -56,6 +61,24 @@ router.post('/choose_ok_for_dryer', function(req, res, next) {
   var washerOrDryer = req.body.washer_or_dryer;
   var okForDryer = req.body.ok_for_dryer;
   laundryManager.chooseOkForDryer(washerOrDryer, okForDryer);
+
+  res.send(JSON.stringify(createStateResponse()));
+});
+
+router.post('/remind_complete', function(req, res, next) {
+  res.setHeader('Content-Type', 'application/json');
+
+  var washerOrDryer = req.body.washer_or_dryer;
+  laundryManager.remindComplete(washerOrDryer);
+
+  res.send(JSON.stringify(createStateResponse()));
+});
+
+router.post('/finish_complete', function(req, res, next) {
+  res.setHeader('Content-Type', 'application/json');
+
+  var washerOrDryer = req.body.washer_or_dryer;
+  laundryManager.finishComplete(washerOrDryer);
 
   res.send(JSON.stringify(createStateResponse()));
 });

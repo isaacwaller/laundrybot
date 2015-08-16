@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "supervisor ./bin/www"
+    "start": "node-dev ./bin/www"
   },
   "dependencies": {
     "body-parser": "~1.13.2",
@@ -14,6 +14,7 @@
     "morgan": "~1.6.1",
     "serve-favicon": "~2.3.0",
     "hangupsjs": "1.0.2",
-    "q": "1.4.1"
+    "q": "1.4.1",
+    "node-dev": "2.6.2"
   }
 }
